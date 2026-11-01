@@ -3,7 +3,9 @@ name: Build image
 on:
   push:
     branches: [main]
+    paths: ["site/**", "Dockerfile", ".github/workflows/build.yaml"]
   pull_request:
+    paths: ["site/**", "Dockerfile", ".github/workflows/build.yaml"]
   workflow_dispatch:
 
 permissions:
