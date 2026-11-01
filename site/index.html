@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AgentLab AI</title>
+<meta name="description" content="AgentLab AI is a small lab where a person and AI agents share repos to build practical software, systems and applied intelligence.">
+<meta name="theme-color" content="#080e1e">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AgentLab AI">
+<meta property="og:description" content="One engineer. A crew of agents. Shared repos.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: dark lab bench on the brand's blueprint grid. Hero pairs the pitch with a replayable work log; the process is an interactive pipeline; everything else stays quiet. */
+:root {
+  --bg: #080e1e;
+  --bg-2: #0d1529;
+  --panel: #0f182d;
+  --line: #1c2843;
+  --grid: rgba(120, 160, 255, .07);
+  --fg: #e7edf7;
+  --muted: #93a3bd;
+  --faint: #5d6f8e;
+  --blue: #1569ff;
+  --sky: #a6d3fd;
+  --human: #f2b45c;
+  --ci: #4cc38a;
+  --glow: rgba(21, 105, 255, .28);
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f7fb; --bg-2: #edf1f8; --panel: #ffffff; --line: #d9e1ee; --grid: rgba(21, 80, 200, .07);
+    --fg: #0d1526; --muted: #4a5a75; --faint: #7486a3;
+    --blue: #1559e8; --sky: #1569ff; --human: #b06a08; --ci: #1d8a55; --glow: rgba(21, 89, 232, .14);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f5f7fb; --bg-2: #edf1f8; --panel: #ffffff; --line: #d9e1ee; --grid: rgba(21, 80, 200, .07);
+  --fg: #0d1526; --muted: #4a5a75; --faint: #7486a3;
+  --blue: #1559e8; --sky: #1569ff; --human: #b06a08; --ci: #1d8a55; --glow: rgba(21, 89, 232, .14);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+body {
+  background: radial-gradient(60rem 36rem at 92% -10%, var(--glow), transparent 60%), var(--bg);
+  color: var(--fg);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; border-radius: 4px; }
+
+/* nav + logo assembly */
+nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.5rem; position: relative; z-index: 1; }
+.brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; font: 600 1.05rem var(--display); letter-spacing: -.01em; }
+.brand svg { width: 32px; height: auto; overflow: visible; }
+.mark polygon { transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.mark .p1 { animation: in1 .9s cubic-bezier(.2,.8,.2,1) both; }
+.mark .p2 { animation: in2 .9s .1s cubic-bezier(.2,.8,.2,1) both; }
+.mark .p3 { animation: in3 .9s .2s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes in1 { from { transform: translate(-40px, 30px); } }
+@keyframes in2 { from { transform: translate(40px, -30px); } }
+@keyframes in3 { from { transform: translate(0, 60px); } }
+.brand:hover .p1 { transform: translate(-8px, 0); }
+.brand:hover .p2 { transform: translate(8px, 0); }
+.brand:hover .p3 { transform: translate(0, 8px); }
+.links { display: flex; gap: 1.5rem; font-size: .95rem; color: var(--muted); }
+.links a { text-decoration: none; }
+.links a:hover { color: var(--fg); }
+
+/* hero */
+.hero { position: relative; }
+.hero canvas { position: absolute; inset: -6rem 0 0 0; width: 100%; height: calc(100% + 6rem); pointer-events: none; }
+.hero .wrap { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; gap: 3.5rem; align-items: center; padding-block: 3.5rem 5rem; }
+.copy { min-width: 0; }
+.kicker { font: 500 .78rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sky); display: flex; align-items: center; gap: .6rem; }
+.kicker::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--human); box-shadow: 0 0 0 4px color-mix(in srgb, var(--human) 22%, transparent); animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--human) 6%, transparent); } }
+h1 { font: 800 clamp(2.6rem, 6.2vw, 4.6rem)/1.02 var(--display); letter-spacing: -.035em; margin: 1.1rem 0 1.4rem; text-wrap: balance; }
+h1 .soft { color: var(--muted); font-weight: 400; }
+h1 em { font-style: normal; color: var(--sky); }
+.lede { color: var(--muted); max-width: 34rem; margin: 0 0 2rem; font-size: 1.15rem; }
+.cta { display: flex; flex-wrap: wrap; gap: .8rem; }
+.btn { display: inline-flex; align-items: center; gap: .5rem; padding: .8rem 1.25rem; border-radius: 999px; font: 600 .98rem var(--body); text-decoration: none; transition: transform .15s ease; border: 0; cursor: pointer; }
+.btn.primary { background: var(--blue); color: #fff; }
+.btn.ghost { border: 1px solid var(--line); color: var(--fg); background: transparent; }
+.btn:hover { transform: translateY(-1px); }
+
+/* work log */
+.log { min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 30px 80px -40px rgba(0,0,0,.6); overflow: hidden; font: 400 .84rem/1.55 var(--mono); }
+.log header { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .55rem .6rem .55rem 1rem; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tabs { display: flex; gap: .25rem; flex-wrap: wrap; }
+.tabs button { background: transparent; border: 1px solid transparent; border-radius: 6px; padding: .25rem .55rem; font: 500 .74rem var(--mono); color: var(--faint); cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-color: var(--line); background: var(--bg-2); }
+.replay { background: transparent; border: 0; color: var(--faint); font: 500 .74rem var(--mono); cursor: pointer; padding: .25rem .4rem; }
+.replay:hover, .tabs button:hover { color: var(--fg); }
+.log ol { list-style: none; margin: 0; padding: .5rem 0; min-height: 19.5rem; }
+.log li { display: grid; grid-template-columns: 4.6rem 1fr; gap: .9rem; padding: .5rem 1rem; }
+.log li > div { min-width: 0; }
+.log li.new { animation: rise .35s ease both; }
+@keyframes rise { from { transform: translateY(6px); opacity: .2; } }
+.who { font-size: .72rem; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; padding-top: .1rem; }
+.who.human { color: var(--human); } .who.agent { color: var(--sky); } .who.ci { color: var(--ci); }
+.msg { color: var(--fg); overflow-wrap: anywhere; }
+.msg.typing::after { content: "▍"; color: var(--sky); animation: blink 1s steps(1) infinite; margin-left: 2px; }
+@keyframes blink { 50% { opacity: 0; } }
+.meta { color: var(--faint); font-size: .74rem; }
+.tag { display: inline-block; padding: 0 .45rem; border-radius: 4px; font-size: .7rem; margin-right: .35rem; border: 1px solid var(--line); color: var(--muted); }
+.tag.ok { color: var(--ci); border-color: color-mix(in srgb, var(--ci) 40%, transparent); }
+.tag.bad { color: #f07178; border-color: color-mix(in srgb, #f07178 40%, transparent); }
+.log footer { padding: .5rem 1rem .7rem; color: var(--faint); font-size: .72rem; border-top: 1px solid var(--line); }
+
+/* sections */
+section.band { border-top: 1px solid var(--line); }
+section.band .wrap { padding-block: 4.5rem; }
+.eyebrow { font: 500 .76rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--faint); margin: 0 0 .8rem; }
+h2 { font: 700 clamp(1.8rem, 3.6vw, 2.6rem)/1.1 var(--display); letter-spacing: -.025em; margin: 0 0 1rem; text-wrap: balance; max-width: 40rem; }
+.intro { color: var(--muted); max-width: 40rem; margin: 0 0 2.5rem; }
+
+.pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.pillar { min-width: 0; padding: 1.4rem 1.3rem 1.5rem; border: 1px solid var(--line); border-radius: 14px; background: var(--bg-2); position: relative; overflow: hidden; transition: border-color .2s ease, transform .2s ease; }
+.pillar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(18rem 12rem at var(--mx, 50%) var(--my, 0%), var(--glow), transparent 70%); opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+.pillar:hover { border-color: color-mix(in srgb, var(--blue) 55%, var(--line)); transform: translateY(-2px); }
+.pillar:hover::before { opacity: 1; }
+.pillar > * { position: relative; }
+.pillar .ico { font: 500 .78rem var(--mono); color: var(--sky); }
+.pillar h3 { font: 600 1.3rem var(--display); margin: .7rem 0 .5rem; letter-spacing: -.01em; }
+.pillar p { color: var(--muted); margin: 0; }
+
+/* pipeline */
+.pipe { display: grid; grid-template-columns: repeat(5, 1fr); position: relative; margin-bottom: 1.5rem; }
+.pipe::before { content: ""; position: absolute; left: 10%; right: 10%; top: 1.15rem; height: 2px; background: var(--line); }
+.pipe .fill { position: absolute; left: 10%; top: 1.15rem; height: 2px; background: linear-gradient(90deg, var(--human), var(--blue)); width: 0; transition: width .5s cubic-bezier(.2,.8,.2,1); }
+.step { position: relative; background: none; border: 0; cursor: pointer; display: grid; justify-items: center; gap: .55rem; padding: 0 .25rem; min-width: 0; }
+.dot { width: 2.3rem; height: 2.3rem; border-radius: 50%; display: grid; place-items: center; font: 500 .78rem var(--mono); background: var(--bg); border: 2px solid var(--line); color: var(--faint); transition: all .3s ease; }
+.step .lbl { font: 600 1rem var(--display); color: var(--muted); }
+.step .own { font: 500 .66rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.step.done .dot { border-color: var(--blue); color: var(--sky); }
+.step[aria-selected="true"] .dot { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 0 0 6px var(--glow); }
+.step[aria-selected="true"] .lbl { color: var(--fg); }
+.own.human { color: var(--human); } .own.agent { color: var(--sky); } .own.ci { color: var(--ci); }
+.detail { border: 1px solid var(--line); border-radius: 14px; background: var(--bg-2); padding: 1.6rem 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; min-height: 11rem; }
+.detail > div { min-width: 0; }
+.detail h3 { font: 600 1.35rem var(--display); margin: 0 0 .5rem; }
+.detail p { margin: 0; color: var(--muted); }
+.detail ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; font: 400 .86rem/1.5 var(--mono); }
+.detail li { display: flex; gap: .6rem; color: var(--fg); }
+.detail li::before { content: "✓"; color: var(--ci); flex: none; }
+.detail.swap { animation: fade .3s ease; }
+@keyframes fade { from { opacity: .3; transform: translateY(4px); } }
+
+.closer .wrap { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 2rem; }
+.closer h2 { margin: 0; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding-block: 2rem 3rem; color: var(--faint); font-size: .88rem; border-top: 1px solid var(--line); }
+
+@media (max-width: 880px) {
+  .hero .wrap { grid-template-columns: 1fr; gap: 2.5rem; padding-block: 2rem 3.5rem; }
+  .pillars { grid-template-columns: 1fr; }
+  .detail { grid-template-columns: 1fr; gap: 1.2rem; }
+  .links { display: none; }
+}
+@media (max-width: 560px) {
+  .step .own { display: none; }
+  .step .lbl { font-size: .82rem; }
+  .log li { grid-template-columns: 1fr; gap: .1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="AgentLab AI home">
+      <svg class="mark" viewBox="68 86 313 263" aria-hidden="true">
+        <polygon class="p1" points="230,89 261,146 136,347 70,347" fill="#1569ff"/>
+        <polygon class="p2" points="270,158 379,347 313,347 235,217" fill="#a6d3fd"/>
+        <polygon class="p3" points="190,287 274,287 237,347 152,347" fill="#a6d3fd"/>
+      </svg>
+      AgentLab AI
+    </a>
+    <div class="links">
+      <a href="#what">What we build</a>
+      <a href="#how">How we work</a>
+      <a href="https://github.com/AgentLab-AI">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <canvas id="grid" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="copy">
+      <div class="kicker">Software. Systems. Applied intelligence.</div>
+      <h1>One engineer. <span class="soft">A crew of agents.</span> <em>Shared repos.</em></h1>
+      <p class="lede">AgentLab AI is a small lab where a person and AI agents work in the same codebase. Agents draft, test and review. A human sets the direction and signs off. The result is practical tools that actually ship.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/AgentLab-AI">See the work on GitHub</a>
+        <a class="btn ghost" href="#how">How it works</a>
+      </div>
+    </div>
+
+    <div class="log" role="figure" aria-label="Example work logs showing a human and agents collaborating on one change">
+      <header>
+        <div class="tabs" role="tablist" aria-label="Example change">
+          <button role="tab" id="tab-feature" aria-selected="true" data-s="feature">feature</button>
+          <button role="tab" id="tab-bugfix" aria-selected="false" data-s="bugfix">bug fix</button>
+          <button role="tab" id="tab-upgrade" aria-selected="false" data-s="upgrade">upgrade</button>
+        </div>
+        <button class="replay" id="replay" type="button">↻ replay</button>
+      </header>
+      <ol id="log"></ol>
+      <footer>Example log. One change, start to finish.</footer>
+    </div>
+  </div>
+</header>
+
+<section class="band" id="what">
+  <div class="wrap">
+    <p class="eyebrow">What we build</p>
+    <h2>Useful things, built the way we'd want to maintain them.</h2>
+    <p class="intro">We take on work small enough to finish and real enough to matter, and we keep the code, the tests and the history readable for whoever picks it up next.</p>
+    <div class="pillars">
+      <div class="pillar"><span class="ico">/software</span><h3>Software</h3><p>Purpose-built apps and developer tools with tests, docs and a clean commit history. Built to be handed over, not babysat.</p></div>
+      <div class="pillar"><span class="ico">/systems</span><h3>Systems</h3><p>Automation, integrations and infrastructure as code, with deploys from the repo and monitoring, so the thing keeps running after the demo.</p></div>
+      <div class="pillar"><span class="ico">/applied-ai</span><h3>Applied intelligence</h3><p>Agents doing real work inside guardrails: scoped permissions, tests and review before merge, and a person accountable for every change.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="how">
+  <div class="wrap">
+    <p class="eyebrow">How we work</p>
+    <h2>Every change takes the same path.</h2>
+    <p class="intro">Agents move fast. Tests and review are what make their work trustworthy. Pick a step to see what happens there.</p>
+    <div class="pipe" role="tablist" aria-label="Development steps" id="pipe">
+      <div class="fill" id="fill"></div>
+    </div>
+    <div class="detail" id="detail" role="tabpanel"></div>
+  </div>
+</section>
+
+<section class="band closer">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Early days</p>
+      <h2>We're just getting started. Follow along.</h2>
+    </div>
+    <a class="btn primary" href="https://github.com/AgentLab-AI">Follow AgentLab-AI on GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 AgentLab AI</span>
+    <span>Built by a human and a few agents.</span>
+  </div>
+</footer>
+
+<script>
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- work log ---------- */
+const SCENARIOS = {
+  feature: [
+    ['human', 'human', 'Add retry with backoff to the sync job. Keep the public API the same.', 'opened issue'],
+    ['builder', 'agent', 'Branch up with a patch. Retries cap at 5, with jitter.', '<span class="tag">+142 −18</span>opened PR'],
+    ['tester', 'agent', 'Added 6 tests: timeouts, 5xx, 429, and a permanent 4xx that must not retry.', '<span class="tag">6 new tests</span>'],
+    ['ci', 'ci', 'Lint, types, unit and integration suites.', '<span class="tag ok">all checks passed</span>'],
+    ['reviewer', 'agent', 'A 429 ignores Retry-After. Suggested a fix inline.', 'requested changes'],
+    ['builder', 'agent', 'Applied. Retry-After now wins over the computed delay.', '<span class="tag ok">checks passed</span>'],
+    ['human', 'human', 'Looks right. Merging.', 'approved · merged'],
+  ],
+  bugfix: [
+    ['human', 'human', 'Some users get duplicate notifications after reconnecting.', 'opened issue'],
+    ['tester', 'agent', 'Reproduced with a failing test: reconnect registers the handler twice.', '<span class="tag bad">1 failing</span>'],
+    ['builder', 'agent', 'Dedupe handlers by subscription id. The failing test now passes.', '<span class="tag">+31 −9</span>opened PR'],
+    ['ci', 'ci', 'Full suite, plus the new regression test.', '<span class="tag ok">all checks passed</span>'],
+    ['reviewer', 'agent', 'Fix is correct. Add a changelog entry so it is traceable.', 'approved with note'],
+    ['human', 'human', 'Good catch on the test-first repro. Merging.', 'merged'],
+  ],
+  upgrade: [
+    ['bot', 'ci', 'Dependency update: config library 4.2 → 5.0 (major).', 'opened PR'],
+    ['builder', 'agent', 'Read the release notes. Two breaking changes; updated 3 call sites.', '<span class="tag">+48 −40</span>pushed'],
+    ['tester', 'agent', 'Added a test for the renamed option so the old name fails loudly.', '<span class="tag">1 new test</span>'],
+    ['ci', 'ci', 'Build, tests and deploy manifests validated.', '<span class="tag ok">all checks passed</span>'],
+    ['human', 'human', 'Ship it.', 'approved · merged'],
+    ['ops', 'agent', 'Rolled out. Health checks green for 10 minutes.', '<span class="tag ok">healthy</span>'],
+  ],
+};
+const logEl = document.getElementById('log');
+let current = 'feature', timers = [];
+
+function entryHTML([who, kind, msg, meta], text, typing) {
+  return `<span class="who ${kind}">${who}</span><div><div class="msg${typing ? ' typing' : ''}">${text}</div>${meta && !typing ? `<div class="meta">${meta}</div>` : ''}</div>`;
+}
+function renderAll(name) {
+  logEl.innerHTML = SCENARIOS[name].map(e => `<li>${entryHTML(e, e[2], false)}</li>`).join('');
+}
+function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+function play(name) {
+  clearTimers();
+  current = name;
+  if (reduced) { renderAll(name); return; }
+  logEl.innerHTML = '';
+  let t = 250;
+  SCENARIOS[name].forEach(e => {
+    timers.push(setTimeout(() => {
+      const li = document.createElement('li');
+      li.className = 'new';
+      li.innerHTML = entryHTML(e, '', true);
+      logEl.appendChild(li);
+      const msg = li.querySelector('.msg');
+      const text = e[2];
+      for (let i = 1; i <= text.length; i++) {
+        timers.push(setTimeout(() => { msg.textContent = text.slice(0, i); }, i * 14));
+      }
+      timers.push(setTimeout(() => { li.innerHTML = entryHTML(e, e[2], false); }, text.length * 14 + 60));
+    }, t));
+    t += e[2].length * 14 + 520;
+  });
+  timers.push(setTimeout(() => {
+    const names = Object.keys(SCENARIOS);
+    select(names[(names.indexOf(name) + 1) % names.length], false);
+  }, t + 6000));
+}
+function select(name, user) {
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.s === name)));
+  play(name);
+}
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => select(b.dataset.s, true)));
+document.getElementById('replay').addEventListener('click', () => play(current));
+renderAll('feature');
+if (!reduced) timers.push(setTimeout(() => play('feature'), 4000));
+
+/* ---------- pipeline ---------- */
+const STEPS = [
+  { name: 'Scope', own: 'human', who: 'human',
+    text: 'A person writes down what done looks like, what must not change, and how we will know it works.',
+    checks: ['Acceptance criteria written', 'Out-of-scope listed', 'Risky areas flagged'] },
+  { name: 'Build', own: 'agent', who: 'agent',
+    text: 'An agent works on its own branch with scoped permissions and opens a pull request early.',
+    checks: ['Isolated branch and sandbox', 'Small, readable commits', 'PR describes the why'] },
+  { name: 'Test', own: 'agent + CI', who: 'ci',
+    text: 'Tests are written with the change, not after it. Bugs start as a failing test. CI runs everything on every push.',
+    checks: ['Unit and integration tests', 'Lint and type checks', 'Config and manifests validated', 'Any failing check blocks review'] },
+  { name: 'Review', own: 'agent', who: 'agent',
+    text: 'A second agent reviews the diff cold, without the builder\'s reasoning, and looks for what the tests missed.',
+    checks: ['Independent reviewer', 'Edge cases and security', 'Suggestions land as commits'] },
+  { name: 'Ship', own: 'human', who: 'human',
+    text: 'A person approves the merge. Deploys happen from the repo, never by hand, and can be rolled back the same way.',
+    checks: ['Human sign-off', 'Deployed from Git', 'Health checks after rollout'] },
+];
+const pipe = document.getElementById('pipe'), fill = document.getElementById('fill'), detail = document.getElementById('detail');
+let active = 0, autoTimer = null, userTouched = false;
+STEPS.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.className = 'step'; b.type = 'button'; b.setAttribute('role', 'tab'); b.id = 'step-' + i;
+  b.innerHTML = `<span class="dot">${String(i + 1).padStart(2, '0')}</span><span class="lbl">${s.name}</span><span class="own ${s.who}">${s.own}</span>`;
+  b.addEventListener('click', () => { userTouched = true; clearInterval(autoTimer); show(i); });
+  pipe.appendChild(b);
+});
+function show(i) {
+  active = i;
+  pipe.querySelectorAll('.step').forEach((b, j) => {
+    b.setAttribute('aria-selected', String(j === i));
+    b.classList.toggle('done', j < i);
+  });
+  fill.style.width = (80 * i / (STEPS.length - 1)) + '%';
+  const s = STEPS[i];
+  detail.classList.remove('swap'); void detail.offsetWidth; detail.classList.add('swap');
+  detail.innerHTML = `<div><h3>${s.name}</h3><p>${s.text}</p></div><ul>${s.checks.map(c => `<li>${c}</li>`).join('')}</ul>`;
+}
+show(0);
+if (!reduced) {
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => {
+      clearInterval(autoTimer);
+      if (e.isIntersecting && !userTouched) autoTimer = setInterval(() => show((active + 1) % STEPS.length), 3200);
+    });
+  }, { threshold: .4 });
+  io.observe(pipe);
+}
+
+/* ---------- pillar spotlight ---------- */
+document.querySelectorAll('.pillar').forEach(p => p.addEventListener('pointermove', e => {
+  const r = p.getBoundingClientRect();
+  p.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+  p.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}));
+
+/* ---------- blueprint grid that follows the pointer ---------- */
+const cv = document.getElementById('grid'), ctx = cv.getContext('2d'), hero = document.querySelector('.hero');
+let mx = -9999, my = -9999, tx = mx, ty = my;
+function size() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = cv.clientWidth * dpr; cv.height = cv.clientHeight * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function draw() {
+  const w = cv.clientWidth, h = cv.clientHeight, step = 44;
+  const css = getComputedStyle(document.documentElement);
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = css.getPropertyValue('--grid').trim();
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = .5; x < w; x += step) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+  for (let y = .5; y < h; y += step) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+  ctx.stroke();
+  if (mx > -999) {
+    const g = ctx.createRadialGradient(mx, my, 0, mx, my, 180);
+    g.addColorStop(0, css.getPropertyValue('--glow').trim());
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.fillRect(mx - 180, my - 180, 360, 360);
+    ctx.fillStyle = css.getPropertyValue('--sky').trim();
+    const cx = Math.round((mx - .5) / step) * step + .5, cy = Math.round((my - .5) / step) * step + .5;
+    ctx.globalAlpha = .7; ctx.fillRect(cx - 2, cy - 2, 4, 4); ctx.globalAlpha = 1;
+  }
+}
+function loop() {
+  mx += (tx - mx) * .15; my += (ty - my) * .15;
+  draw();
+  if (Math.abs(tx - mx) > .5 || Math.abs(ty - my) > .5) requestAnimationFrame(loop); else running = false;
+}
+let running = false;
+size(); draw();
+addEventListener('resize', () => { size(); draw(); });
+if (!reduced) {
+  hero.addEventListener('pointermove', e => {
+    const r = cv.getBoundingClientRect();
+    tx = e.clientX - r.left; ty = e.clientY - r.top;
+    if (mx < -999) { mx = tx; my = ty; }
+    if (!running) { running = true; requestAnimationFrame(loop); }
+  });
+  hero.addEventListener('pointerleave', () => { tx = ty = mx = my = -9999; draw(); });
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+</script>
+</body>
+</html>
